@@ -19,7 +19,10 @@ except ImportError:
 	sys.exit(0)
 
 
-browser = webdriver.Firefox()
+options = webdriver.ChromeOptions()
+options.add_argument('headless')
+browser = webdriver.Chrome(chrome_options = options)
+
 browser.get("http://www.mutationtaster.org/StartQueryEngine.html")
 
 
@@ -56,14 +59,24 @@ export_TSV = browser.find_element_by_xpath("//input[@value='export as TSV']")
 export_TSV.click()
 
 while True:
-	try:	
-		# retrieve_TSV = browser.find_element_by_link_text("retrieve TSV file")
-		#retrieve_TSV.click()
-		url = browser.current_url
-		#urllib.urlretrieve(url,"export.zip")
-		r = requests.get(url)
-		with open("export.zip","wb") as code:
-			code.write(r.content)
+	try:
+		notDeleted = True
+	        url = browser.current_url
+		charIndex = len(url)-1
+		slashCount = 0
+		url = url.split("/")
+		newUrl = ""
+		lastIndex = len(url)-1
+		vcfCode = url[4]
+		for i in range(0,lastIndex):
+			if i<(lastIndex-1):
+				newUrl += url[i]+"/"
+			
+			else:
+				newUrl += vcfCode + "//export.zip"
+			        print(newUrl)
+				browser.get(newUrl)				
 		break
 	except ERROR:
+		print("Sorry")
 		continue
